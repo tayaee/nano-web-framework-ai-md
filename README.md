@@ -1,6 +1,6 @@
 # AI.MD -- AI-powered Markdown Engine
 
-ai.md is a new way of developing simple SPA or REST API applicatio using markdown.
+ai.md is a new way of developing simple SPA or REST API application using markdown.
 It is human-editable via text editors and directly compiled by the AI.MD engine into
 executable applications.
 
