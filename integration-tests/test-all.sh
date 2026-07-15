@@ -15,11 +15,17 @@ set -uo pipefail
 REPO_ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
+# Everything lands under logs/ (gitignored) instead of tmp/, so a run's full
+# transcript -- including timestamps -- is sitting on disk for direct
+# inspection instead of needing to be pasted back by hand.
 TS="$(date +%Y%m%d_%H%M%S)"
-TMP_DIR="$REPO_ROOT/tmp/$TS"
+TMP_DIR="$REPO_ROOT/logs/$TS"
 mkdir -p "$TMP_DIR"
 SUMMARY_LOG="$TMP_DIR/summary.log"
 : > "$SUMMARY_LOG"
+RUN_LOG="$TMP_DIR/run.log"
+: > "$RUN_LOG"
+SCRIPT_START="$(date +%s)"
 
 LLM_NAMES=(sonnet deepseek minimax openai openrouter)
 KEY_VARS=(ANTHROPIC_API_KEY DEEPSEEK_API_KEY MINIMAX_API_KEY OPENAI_API_KEY OPENROUTER_API_KEY)
@@ -27,10 +33,18 @@ KEY_VARS=(ANTHROPIC_API_KEY DEEPSEEK_API_KEY MINIMAX_API_KEY OPENAI_API_KEY OPEN
 PASS_COUNT=0
 FAIL_COUNT=0
 
+log() {
+    # log <message> -- timestamps + elapsed-since-start, console + run.log.
+    # Makes a pasted log show which step actually ate the time instead of
+    # looking like a silent hang.
+    local elapsed=$(( $(date +%s) - SCRIPT_START ))
+    printf '[%s +%02d:%02d] %s\n' "$(date +%H:%M:%S)" "$((elapsed / 60))" "$((elapsed % 60))" "$1" | tee -a "$RUN_LOG"
+}
+
 record() {
     # record <PASS|FAIL|SKIP|WARN> <item> <message>
     local status="$1" item="$2" msg="$3"
-    printf '[%s] %-28s %s\n' "$status" "$item" "$msg" | tee -a "$SUMMARY_LOG"
+    log "$(printf '[%s] %-28s %s' "$status" "$item" "$msg")" | tee -a "$SUMMARY_LOG" >/dev/null
     case "$status" in
         PASS) PASS_COUNT=$((PASS_COUNT + 1)) ;;
         FAIL) FAIL_COUNT=$((FAIL_COUNT + 1)) ;;
@@ -83,30 +97,34 @@ fi
 for name in "${LLM_NAMES[@]}"; do
     rm -rf "$REPO_ROOT/src/$name" "$REPO_ROOT/dist/$name"
 done
-bash "$REPO_ROOT/undeploy.sh" >>"$TMP_DIR/undeploy-initial.log" 2>&1
+log "Cleaning up any leftover deployment from a previous run..."
+for name in "${LLM_NAMES[@]}"; do
+    LLM_NAME="$name" bash "$REPO_ROOT/undeploy.sh" >>"$TMP_DIR/undeploy-initial.log" 2>&1
+done
 git checkout -- dist/tetris.ai.md.html dist/convert.ai.md.py 2>>"$TMP_DIR/undeploy-initial.log" || true
-record PASS cleanup "prior test artifacts removed, prebuilt dist restored"
+record PASS cleanup "prior test artifacts removed, prebuilt dist restored (all provider projects)"
 
+log "Building docker images (this may take a while)..."
 if ! bash "$REPO_ROOT/build.sh" >"$TMP_DIR/build.log" 2>&1; then
     record FAIL build "docker compose build failed -- see $TMP_DIR/build.log"
     exit 1
 fi
 record PASS build "docker compose build succeeded"
 
-PORT="$(bash "$REPO_ROOT/integration-tests/find-free-port.sh" 18080)"
-if [ -z "$PORT" ]; then
-    record FAIL port "could not find a free port from 18080"
-    exit 1
-fi
-export NGINX_PORT="$PORT"
-record PASS port "using NGINX_PORT=$PORT"
-BASE_URL="http://localhost:$PORT"
+# Each provider gets its own compose project (ai-md-<name>, set via LLM_NAME in
+# docker-compose.yml's top-level `name:`) and its own nginx port, so multiple
+# providers can stay deployed and visible as separate container groups
+# (Docker Desktop) at the same time instead of being torn down one-by-one.
+NEXT_PORT_START=18080
+deployed_llms=()
+declare -A PORT_OF
 
 # -- 3. Per-provider verification -------------------------------------------
 
 wait_for_mtime_change() {
     # wait_for_mtime_change <path> <old_mtime> <timeout_s>
     local path="$1" old="$2" timeout="$3" waited=0
+    log "Waiting for watcher rebuild of $(basename "$path")..."
     while [ "$waited" -lt "$timeout" ]; do
         if [ -f "$path" ]; then
             new="$(stat -c %Y "$path" 2>/dev/null || echo "$old")"
@@ -128,7 +146,7 @@ verify_flow_a_spa() {
 
     local mark1 http1 time1
     mark1="$(engine_log_lines)"
-    http1=$(curl -s -o "$TMP_DIR/${llm}-${spec}-hit1.html" -w '%{http_code} %{time_total}' "$BASE_URL/$spec")
+    http1=$(curl -s --max-time 5 -o "$TMP_DIR/${llm}-${spec}-hit1.html" -w '%{http_code} %{time_total}' "$BASE_URL/$spec")
     code1="${http1%% *}"; t1="${http1##* }"
     if [ "$code1" = "200" ] && awk -v t="$t1" 'BEGIN{exit !(t<2)}'; then
         record PASS "$llm:$spec:prebuilt-hit1" "http=$code1 time=${t1}s"
@@ -155,7 +173,7 @@ verify_flow_a_spa() {
     fi
 
     mark2="$(engine_log_lines)"
-    http3=$(curl -s -o "$TMP_DIR/${llm}-${spec}-hit3.html" -w '%{http_code} %{time_total}' "$BASE_URL/$spec")
+    http3=$(curl -s --max-time 5 -o "$TMP_DIR/${llm}-${spec}-hit3.html" -w '%{http_code} %{time_total}' "$BASE_URL/$spec")
     code3="${http3%% *}"; t3="${http3##* }"
     if [ "$code3" = "200" ] && awk -v t="$t3" 'BEGIN{exit !(t<2)}'; then
         record PASS "$llm:$spec:recache-hit3" "http=$code3 time=${t3}s"
@@ -177,7 +195,7 @@ verify_flow_a_api() {
 
     local mark1
     mark1="$(engine_log_lines)"
-    http1=$(curl -s -o /dev/null -w '%{http_code} %{time_total}' "$BASE_URL/$spec")
+    http1=$(curl -s --max-time 5 -o /dev/null -w '%{http_code} %{time_total}' "$BASE_URL/$spec")
     code1="${http1%% *}"; t1="${http1##* }"
     # py artifact GET with no subpath redirects (302) to /docs -- that's the
     # "prebuilt, served without compiling" signal for an api target.
@@ -206,7 +224,7 @@ verify_flow_a_api() {
     fi
 
     mark2="$(engine_log_lines)"
-    http3=$(curl -s -o /dev/null -w '%{http_code} %{time_total}' "$BASE_URL/$spec")
+    http3=$(curl -s --max-time 5 -o /dev/null -w '%{http_code} %{time_total}' "$BASE_URL/$spec")
     code3="${http3%% *}"; t3="${http3##* }"
     if [ "$code3" = "302" ] && awk -v t="$t3" 'BEGIN{exit !(t<2)}'; then
         record PASS "$llm:$spec:recache-hit3" "http=$code3 time=${t3}s"
@@ -225,7 +243,8 @@ verify_flow_b() {
     local llm="$1" spec="$2" expect_code="$3"
     local mark
     mark="$(engine_log_lines)"
-    http1=$(curl -s -o "$TMP_DIR/${llm}-$(basename "$spec")-fresh.out" -w '%{http_code} %{time_total}' "$BASE_URL/$spec")
+    log "Generating $spec via $llm (real LLM call, may take up to 30s)..."
+    http1=$(curl -s --max-time 30 -o "$TMP_DIR/${llm}-$(basename "$spec")-fresh.out" -w '%{http_code} %{time_total}' "$BASE_URL/$spec")
     code1="${http1%% *}"; t1="${http1##* }"
     if [ "$code1" = "$expect_code" ]; then
         record PASS "$llm:$spec:fresh-generate" "http=$code1 time=${t1}s"
@@ -248,14 +267,31 @@ for name in "${LLM_NAMES[@]}"; do
         continue
     fi
 
-    echo "=== $name ===" | tee -a "$SUMMARY_LOG"
+    log "=== $name ===" | tee -a "$SUMMARY_LOG" >/dev/null
     LOGFILE="$TMP_DIR/$name-engine.log"
 
+    # LLM_NAME drives docker-compose.yml's project name (ai-md-$name) and
+    # container names, so each provider becomes its own container group.
+    export LLM_NAME="$name"
+    PORT="$(bash "$REPO_ROOT/integration-tests/find-free-port.sh" "$NEXT_PORT_START")"
+    if [ -z "$PORT" ]; then
+        record FAIL "$name:port" "could not find a free port from $NEXT_PORT_START"
+        continue
+    fi
+    export NGINX_PORT="$PORT"
+    PORT_OF["$name"]="$PORT"
+    NEXT_PORT_START=$((PORT + 1))
+    record PASS "$name:port" "using NGINX_PORT=$PORT (project ai-md-$name)"
+    BASE_URL="http://localhost:$PORT"
+
+    log "Deploying $name (docker compose pull/build/up) -- this can quietly take a while..."
     if ! bash "$REPO_ROOT/deploy-with-$name.sh" >"$TMP_DIR/$name-deploy.log" 2>&1; then
         record FAIL "$name:deploy" "deploy-with-$name.sh failed -- see $TMP_DIR/$name-deploy.log"
         continue
     fi
+    deployed_llms+=("$name")
 
+    log "Waiting for $name engine to settle..."
     sleep 5
     if engine_logs | grep -iq "ERROR"; then
         record FAIL "$name:no-errors" "engine log contains ERROR after startup"
@@ -275,13 +311,24 @@ for name in "${LLM_NAMES[@]}"; do
 
     engine_logs > "$LOGFILE"
 
-    bash "$REPO_ROOT/undeploy.sh" >>"$TMP_DIR/$name-undeploy.log" 2>&1
-    git checkout -- dist/tetris.ai.md.html dist/convert.ai.md.py 2>>"$TMP_DIR/$name-undeploy.log" || true
+    # Intentionally NOT undeploying here: src/dist are shared bind mounts
+    # across every provider's container group, so the committed prebuilt
+    # spec files must be restored before the next provider runs flow A --
+    # but the container group itself (ai-md-$name) is left running so it
+    # stays visible as its own group in `docker compose ls` / Docker Desktop.
+    git checkout -- dist/tetris.ai.md.html dist/convert.ai.md.py 2>>"$TMP_DIR/$name-cleanup.log" || true
     # src/<name> and dist/<name> are intentionally kept for post-run inspection.
 done
 
-echo "" | tee -a "$SUMMARY_LOG"
-echo "PASS=$PASS_COUNT FAIL=$FAIL_COUNT (detailed logs: $TMP_DIR)" | tee -a "$SUMMARY_LOG"
+log "PASS=$PASS_COUNT FAIL=$FAIL_COUNT (detailed logs: $TMP_DIR)" | tee -a "$SUMMARY_LOG" >/dev/null
+
+if [ "${#deployed_llms[@]}" -gt 0 ]; then
+    log "Still running (one container group per provider):" | tee -a "$SUMMARY_LOG" >/dev/null
+    for name in "${deployed_llms[@]}"; do
+        log "  ai-md-$name  -> http://localhost:${PORT_OF[$name]}" | tee -a "$SUMMARY_LOG" >/dev/null
+    done
+    log "To tear one down: LLM_NAME=<name> $REPO_ROOT/undeploy.sh" | tee -a "$SUMMARY_LOG" >/dev/null
+fi
 
 if [ "$FAIL_COUNT" -gt 0 ]; then
     exit 1

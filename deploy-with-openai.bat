@@ -7,6 +7,7 @@ if "%LLM_API_KEY%"=="" (
         exit /b 1
     )
 )
+set LLM_NAME=openai
 set LLM_BASE_URL=https://api.openai.com/v1
 set LLM_MODEL=gpt-5.4-mini
 set LLM_API_PROTOCOL=openai

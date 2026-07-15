@@ -8,6 +8,7 @@ if "%LLM_API_KEY%"=="" (
     echo LLM_API_KEY is not set. Please set it before running this script.
     exit /b 1
 )
+set LLM_NAME=minimax
 set LLM_BASE_URL=https://api.minimax.io/v1
 set LLM_MODEL=MiniMax-M3
 set LLM_API_PROTOCOL=openai

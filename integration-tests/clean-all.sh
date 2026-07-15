@@ -8,21 +8,34 @@ set +e
 REPO_ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
 cd "$REPO_ROOT" || exit 1
 
+mkdir -p logs
+LOG_FILE="logs/clean-all-$(date +%Y%m%d_%H%M%S).log"
+SCRIPT_START="$(date +%s)"
+
+log() {
+    # log <message> -- timestamps + elapsed-since-start, console + LOG_FILE.
+    local elapsed=$(( $(date +%s) - SCRIPT_START ))
+    printf '[%s +%02d:%02d] %s\n' "$(date +%H:%M:%S)" "$((elapsed / 60))" "$((elapsed % 60))" "$1" | tee -a "$LOG_FILE"
+}
+
 LLM_NAMES="sonnet deepseek minimax openai openrouter"
 
-echo "Undeploying default ai-md project..."
+log "Undeploying default ai-md project..."
 docker compose down >/dev/null 2>&1
 
 for name in $LLM_NAMES; do
-    echo "Undeploying ai-md-$name..."
-    docker compose -p "ai-md-$name" down >/dev/null 2>&1
+    log "Undeploying ai-md-$name..."
+    docker compose -p "ai-md-$name" down --remove-orphans >/dev/null 2>&1
     rm -rf "src/$name" "dist/$name"
 done
 
-echo "Restoring committed dist/ artifacts..."
+log "Restoring committed dist/ artifacts..."
 git checkout -- dist/tetris.ai.md.html dist/convert.ai.md.py 2>/dev/null
 
-echo "Removing tmp/*..."
+log "Removing tmp/*..."
 rm -rf tmp/*
+# logs/ is intentionally left alone here (unlike the old tmp/ wipe): it's
+# gitignored and timestamped per run, so past runs stay available for
+# after-the-fact debugging instead of being deleted by the next clean-all.
 
-echo "Done."
+log "Done."
