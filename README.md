@@ -1,7 +1,9 @@
 # AI.MD -- Nano Web Framework Translating Markdown Into Web Application Instantly.
 
-ai.md is a new way of developing simple SPA (single page application) or REST API application using markdown.
+`ai.md` is a new way of developing simple SPA (single page application) or REST API applications using markdown.
 It is human-editable via text editors and directly compiled by the AI.MD engine into executable applications.
+AI (LLM) will automatically determine the type of application (either SPA or REST API) based on your description.
+Just drop a new file with the extension `.ai.md` into `src/` and see your application instantly in the browser.
 
 ## Demo Use Cases
 * SPA (Tetris)
@@ -37,7 +39,7 @@ It is human-editable via text editors and directly compiled by the AI.MD engine 
     ```
 * Open http://localhost:8080/ and try out the demo app Tetris
 * Try editing `src/tetris.ai.md` with additional requirements. It will trigger app rebuild.
-* Reload the URL after a few seconds later. Find your app cache at dist/. Those will be re-used during the next container runs.
+* Reload the URL after a few seconds later. Find your app cache at `dist/`. Those will be re-used during the next container runs.
 * Clean it up.
     ```
     ./undeploy-openai.sh
