@@ -99,7 +99,7 @@ for name in "${LLM_NAMES[@]}"; do
 done
 log "Cleaning up any leftover deployment from a previous run..."
 for name in "${LLM_NAMES[@]}"; do
-    LLM_NAME="$name" bash "$REPO_ROOT/undeploy.sh" >>"$TMP_DIR/undeploy-initial.log" 2>&1
+    LLM_NAME="$name" bash "$REPO_ROOT/undeploy-$name.sh" >>"$TMP_DIR/undeploy-initial.log" 2>&1
 done
 git checkout -- dist/tetris.ai.md.html dist/convert.ai.md.py 2>>"$TMP_DIR/undeploy-initial.log" || true
 record PASS cleanup "prior test artifacts removed, prebuilt dist restored (all provider projects)"
@@ -327,7 +327,7 @@ if [ "${#deployed_llms[@]}" -gt 0 ]; then
     for name in "${deployed_llms[@]}"; do
         log "  ai-md-$name  -> http://localhost:${PORT_OF[$name]}" | tee -a "$SUMMARY_LOG" >/dev/null
     done
-    log "To tear one down: LLM_NAME=<name> $REPO_ROOT/undeploy.sh" | tee -a "$SUMMARY_LOG" >/dev/null
+    log "To tear one down: $REPO_ROOT/undeploy-<name>.sh" | tee -a "$SUMMARY_LOG" >/dev/null
 fi
 
 if [ "$FAIL_COUNT" -gt 0 ]; then

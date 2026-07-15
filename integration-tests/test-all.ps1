@@ -59,13 +59,10 @@ function Write-Log {
     return $line
 }
 
-$LlmNames = @("sonnet", "deepseek", "minimax", "openai", "openrouter")
+$LlmNames = @("minimax", "openai")
 $KeyVars = @{
-    sonnet     = "ANTHROPIC_API_KEY"
-    deepseek   = "DEEPSEEK_API_KEY"
     minimax    = "MINIMAX_API_KEY"
     openai     = "OPENAI_API_KEY"
-    openrouter = "OPENROUTER_API_KEY"
 }
 
 $script:PassCount = 0
@@ -182,7 +179,7 @@ foreach ($name in $LlmNames) {
 Write-Log "Cleaning up any leftover deployment from a previous run..." | Out-Null
 foreach ($name in $LlmNames) {
     $env:LLM_NAME = $name
-    & "$RepoRoot\undeploy.bat" *>> (Join-Path $TmpDir "undeploy-initial.log")
+    & "$RepoRoot\undeploy-$name.bat" *>> (Join-Path $TmpDir "undeploy-initial.log")
 }
 Remove-Item Env:\LLM_NAME -ErrorAction SilentlyContinue
 git checkout -- dist/tetris.ai.md.html dist/convert.ai.md.py 2>>(Join-Path $TmpDir "undeploy-initial.log")
@@ -403,7 +400,7 @@ if ($DeployedLlms.Count -gt 0) {
     foreach ($name in $DeployedLlms) {
         (Write-Log "  ai-md-$name  -> http://localhost:$($PortOf[$name])") | Tee-Object -FilePath $SummaryLog -Append | Out-Null
     }
-    (Write-Log "To tear one down: `$env:LLM_NAME='<name>'; $RepoRoot\undeploy.bat") | Tee-Object -FilePath $SummaryLog -Append | Out-Null
+    (Write-Log "To tear one down: $RepoRoot\undeploy-<name>.bat") | Tee-Object -FilePath $SummaryLog -Append | Out-Null
 }
 
 if ($FailCount -gt 0) {

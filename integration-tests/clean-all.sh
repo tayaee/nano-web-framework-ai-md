@@ -18,7 +18,7 @@ log() {
     printf '[%s +%02d:%02d] %s\n' "$(date +%H:%M:%S)" "$((elapsed / 60))" "$((elapsed % 60))" "$1" | tee -a "$LOG_FILE"
 }
 
-LLM_NAMES="sonnet deepseek minimax openai openrouter"
+LLM_NAMES="minimax openai"
 
 log "Undeploying default ai-md project..."
 docker compose down >/dev/null 2>&1

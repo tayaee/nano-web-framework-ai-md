@@ -40,7 +40,7 @@ if (-not (Test-Path (Join-Path $RepoRoot ".git"))) {
 Remove-Item Env:\COMPOSE_PROJECT_NAME -ErrorAction SilentlyContinue
 Set-Location $RepoRoot
 
-$LlmNames = @("sonnet", "deepseek", "minimax", "openai", "openrouter")
+$LlmNames = @("minimax", "openai")
 
 # docker-compose.yml requires LLM_API_KEY to be set (${LLM_API_KEY:?...}) even
 # just to parse the file for `down` -- without this, teardown silently no-ops
