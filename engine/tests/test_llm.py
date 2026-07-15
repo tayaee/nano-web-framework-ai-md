@@ -99,6 +99,27 @@ def test_chat_retries_with_halved_max_tokens_on_token_error(monkeypatch):
     assert fake.chat.completions.calls[1]["max_tokens"] == 4096
 
 
+def test_chat_switches_to_max_completion_tokens_param(monkeypatch):
+    settings = make_settings(max_tokens=8192)
+    fake = _install_fake_client(
+        monkeypatch,
+        [
+            bad_request(
+                "Unsupported parameter: 'max_tokens' is not supported with this "
+                "model. Use 'max_completion_tokens' instead."
+            ),
+            "ok after switch",
+        ],
+    )
+
+    result = llm.chat("sys", "user", settings)
+
+    assert result == "ok after switch"
+    assert len(fake.chat.completions.calls) == 2
+    assert "max_tokens" not in fake.chat.completions.calls[1]
+    assert fake.chat.completions.calls[1]["max_completion_tokens"] == 8192
+
+
 def test_chat_propagates_non_token_bad_request(monkeypatch):
     settings = make_settings(max_tokens=8192)
     _install_fake_client(monkeypatch, [bad_request("invalid api key")])

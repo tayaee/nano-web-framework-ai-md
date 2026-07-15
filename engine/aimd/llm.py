@@ -49,6 +49,7 @@ def _chat_openai_compatible(system: str, user: str, settings: Settings) -> str:
         {"role": "system", "content": system},
         {"role": "user", "content": user},
     ]
+    token_param = "max_tokens"
 
     last_error: openai.BadRequestError | None = None
     for _ in range(_MAX_CLAMP_RETRIES + 1):
@@ -57,10 +58,17 @@ def _chat_openai_compatible(system: str, user: str, settings: Settings) -> str:
                 model=settings.model,
                 messages=messages,
                 temperature=0.0,
-                max_tokens=tokens,
+                **{token_param: tokens},
             )
         except openai.BadRequestError as e:
             message = str(e)
+            if "max_completion_tokens" in message and token_param != "max_completion_tokens":
+                # Some newer models (e.g. gpt-5.x) reject max_tokens outright and
+                # require max_completion_tokens instead -- switch the param name,
+                # not the token value, and retry without consuming the clamp budget.
+                token_param = "max_completion_tokens"
+                log.warning("max_tokens unsupported, switching to max_completion_tokens")
+                continue
             if "max_tokens" not in message and "token" not in message:
                 raise
             last_error = e
