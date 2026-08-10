@@ -62,6 +62,15 @@ class AppRegistry:
 이름별 락이므로 다른 name의 reload는 병렬로 진행된다. drop도 자기 name 락만 잡으면 충분.
 
 ## 완료 조건
-- [ ] AppRegistry가 이름별 락을 사용
-- [ ] `test_concurrent_unrelated_reloads` 같은 회귀 테스트 추가 (스레드 2개로 검증)
-- [ ] 기존 `test_registry.py` 7개 회귀 없음
+- [x] AppRegistry가 이름별 락을 사용
+- [x] `test_concurrent_unrelated_reloads` 같은 회귀 테스트 추가 (스레드 2개로 검증)
+- [x] 기존 `test_registry.py` 7개 회귀 없음
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T01:00:04-04:00
+- **변경 파일**:
+  - `engine/aimd/registry.py`
+  - `engine/tests/test_registry.py`
+  - `regression-tests/verify-issue-50.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-50.sh` 통과 (8 passed)
