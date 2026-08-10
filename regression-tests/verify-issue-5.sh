@@ -27,4 +27,8 @@ fi
 
 # 4. Run tests
 cd engine
-uv run pytest tests/test_prompts.py -q
+if command -v uv >/dev/null 2>&1; then
+    uv run pytest tests/test_prompts.py -q
+else
+    python -m pytest tests/test_prompts.py -q
+fi

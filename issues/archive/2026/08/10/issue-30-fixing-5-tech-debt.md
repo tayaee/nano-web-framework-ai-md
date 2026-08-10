@@ -1,7 +1,7 @@
 # issue-30: verify-issue-5.sh가 spec의 `python -m pytest` 대신 `uv run pytest`에 의존 (good-to-fix)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-5 완료 후
@@ -26,5 +26,14 @@ issue-5.md의 완료 조건에 명시된 검증 명령은
 - (B) 또는 `docs/`에 "본 프로젝트는 `uv`를 표준 도구로 가정한다"를 명문화하고 spec 문구를 갱신
 
 ## 완료 조건(승격 후)
-- [ ] (A)/(B) 중 선택한 방침을 issue-5 및 관련 스크립트에 반영
-- [ ] `bash regression-tests/verify-issue-5.sh` 통과 유지
+- [x] (A)/(B) 중 선택한 방침을 issue-5 및 관련 스크립트에 반영
+- [x] `bash regression-tests/verify-issue-5.sh` 통과 유지
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T00:55:17-04:00
+- **변경 파일**:
+  - `regression-tests/verify-issue-5.sh`
+  - `regression-tests/verify-issue-30.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-30.sh` 통과
+
