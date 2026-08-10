@@ -40,8 +40,17 @@ negative cache + exponential backoff:
 핵심 결정: "stale이지만 컴파일도 실패" 상태를 별도 캐시 엔트리로 모델링해야 한다. 현재 AIMDDispatcher는 컴파일 상태를 들고 있지 않으므로 name별 lock + 메모리 dict로 dispatcher 인스턴스에 저장.
 
 ## 완료 조건
-- [ ] 컴파일 실패 시 (name, spec_mtime)별 마지막 실패 시각 + 백오프 종료 시각 저장
-- [ ] 백오프 윈도우 내 요청은 compile_spec 호출 없이 stale 아티팩트 서빙
-- [ ] 백오프 만료 후 1회 재시도, 실패 시 윈도우 2배 (max 캡)
-- [ ] 정상 컴파일 성공 시 캐시 엔트리 제거
-- [ ] 회귀 테스트: 컴파일 실패 mock 후 5회 요청 → compile_spec 호출 ≤1회
+- [x] 컴파일 실패 시 (name, spec_mtime)별 마지막 실패 시각 + 백오프 종료 시각 저장
+- [x] 백오프 윈도우 내 요청은 compile_spec 호출 없이 stale 아티팩트 서빙
+- [x] 백오프 만료 후 1회 재시도, 실패 시 윈도우 2배 (max 캡)
+- [x] 정상 컴파일 성공 시 캐시 엔트리 제거
+- [x] 회귀 테스트: 컴파일 실패 mock 후 5회 요청 → compile_spec 호출 ≤1회
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T01:00:26-04:00
+- **변경 파일**:
+  - `engine/aimd/main.py`
+  - `engine/tests/test_main.py`
+  - `regression-tests/verify-issue-51.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-51.sh` 통과
