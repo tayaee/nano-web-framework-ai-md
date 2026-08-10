@@ -152,6 +152,8 @@ def _chat_openai_compatible(system: str, user: str, settings: Settings) -> str:
             log.warning("max_tokens rejected, retrying with %d", tokens)
             continue
 
+        if not response.choices:
+            raise RuntimeError("empty LLM response")
         content = response.choices[0].message.content
         if content is None:
             raise RuntimeError("empty LLM response")

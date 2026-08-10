@@ -1,7 +1,7 @@
 # issue-40: llm.chat — response.choices가 빈 리스트일 때 IndexError가 무방비로 노출됨 (good-to-fix)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-6 완료 후
@@ -36,6 +36,15 @@ if content is None:
 ```
 
 ## 완료 조건(승격 후)
-- [ ] `response.choices == []`인 경우 `IndexError` 대신 `RuntimeError("empty LLM response")` 발생
-- [ ] 기존 `content is None` 케이스 회귀 없음
-- [ ] `cd engine && uv run pytest tests/test_llm.py -q` 통과
+- [x] `response.choices == []`인 경우 `IndexError` 대신 `RuntimeError("empty LLM response")` 발생
+- [x] 기존 `content is None` 케이스 회귀 없음
+- [x] `cd engine && uv run pytest tests/test_llm.py -q` 통과
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T00:57:34-04:00
+- **변경 파일**:
+  - `engine/aimd/llm.py`
+  - `regression-tests/verify-issue-40.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-40.sh` 통과
+
