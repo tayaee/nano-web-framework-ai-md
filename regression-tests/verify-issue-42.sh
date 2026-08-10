@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+cd "$(git rev-parse --show-toplevel 2>/dev/null || echo ".")"
 # issue-42: unify classify log format regression verification
 set -euo pipefail
 

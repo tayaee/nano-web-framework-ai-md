@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "$(git rev-parse --show-toplevel 2>/dev/null || echo ".")"
 set -e
 
 # 1. Verify the regex includes a CRLF-tolerant pattern

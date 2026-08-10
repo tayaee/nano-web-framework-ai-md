@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+cd "$(git rev-parse --show-toplevel 2>/dev/null || echo ".")"
 # issue-9: registry.py — dynamic sub-app registry regression verification
 set -euo pipefail
 

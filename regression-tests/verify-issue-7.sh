@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+cd "$(git rev-parse --show-toplevel 2>/dev/null || echo ".")"
 # issue-7: classifier.py — SPA/API classification regression verification
 set -euo pipefail
 

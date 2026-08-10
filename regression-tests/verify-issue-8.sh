@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+cd "$(git rev-parse --show-toplevel 2>/dev/null || echo ".")"
 # issue-8: compiler.py — compile pipeline + per-file lock regression verification
 set -euo pipefail
 

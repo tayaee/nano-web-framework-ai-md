@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "$(git rev-parse --show-toplevel 2>/dev/null || echo ".")"
 set -e
 
 # Verify the regex allows a single space right after ``` (single-quoted to avoid backtick parsing)

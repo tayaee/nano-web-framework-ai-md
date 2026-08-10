@@ -1,7 +1,7 @@
 # issue-28: verify-issue-5.sh의 상대경로가 실행 디렉토리에 의존 (good-to-fix)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-5 완료 후
@@ -40,5 +40,14 @@ cd "$(git rev-parse --show-toplevel)"
 ```
 
 ## 완료 조건(승격 후)
-- [ ] 전 회귀 스크립트(1~27)의 동일 패턴 처리 방침 결정 및 반영
-- [ ] `bash regression-tests/verify-issue-5.sh`를 `regression-tests/` 내부에서 직접 실행해도 통과
+- [x] 전 회귀 스크립트(1~27)의 동일 패턴 처리 방침 결정 및 반영
+- [x] `bash regression-tests/verify-issue-5.sh`를 `regression-tests/` 내부에서 직접 실행해도 통과
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T00:54:55-04:00
+- **변경 파일**:
+  - `regression-tests/verify-issue-*.sh`
+  - `regression-tests/verify-issue-28.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `(cd regression-tests && ./verify-issue-5.sh)` 및 `./regression-tests/verify-issue-28.sh` 통과
+

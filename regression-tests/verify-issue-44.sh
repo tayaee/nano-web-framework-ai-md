@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+cd "$(git rev-parse --show-toplevel 2>/dev/null || echo ".")"
 # issue-44: compiler._import_gate — treat SystemExit (BaseException) as a validation failure too (regression verification)
 set -euo pipefail
 

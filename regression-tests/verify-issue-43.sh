@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+cd "$(git rev-parse --show-toplevel 2>/dev/null || echo ".")"
 # issue-43: compile_spec — only delete the opposite-extension artifact after atomic_write succeeds (regression verification)
 set -euo pipefail
 
