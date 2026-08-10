@@ -1,7 +1,7 @@
 # issue-36: FIX_TEMPLATE의 {error} 플레이스홀더가 caller 구현 시 프롬프트 인젝션 표면이 될 수 있음 (good-to-fix, 설계 메모)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-5 완료 후, caller(향후 compiler/llm 이슈) 구현 시 재평가 필요
@@ -30,5 +30,14 @@ caller 구현 이슈(issue-8 compiler 등)에서 `{error}`에 채워 넣는 문�
 그대로 넣지 않도록 명시.
 
 ## 완료 조건(승격 후)
-- [ ] caller 구현 코드에서 `{error}`에 들어가는 문자열의 출처 확인
-- [ ] 필요 시 정제/escape 로직 추가 및 테스트
+- [x] caller 구현 코드에서 `{error}`에 들어가는 문자열의 출처 확인
+- [x] 필요 시 정제/escape 로직 추가 및 테스트
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T00:56:41-04:00
+- **변경 파일**:
+  - `engine/aimd/prompts.py`
+  - `regression-tests/verify-issue-36.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-36.sh` 통과
+

@@ -28,6 +28,7 @@ API_SYSTEM = (
     "- Output ONLY the raw Python code. No markdown fences, no explanations."
 )
 
+# Note for callers: {error} should contain sanitized error messages (e.g. str(e)), not raw user prompt text to avoid prompt injection.
 FIX_TEMPLATE = (
     "The code you produced failed validation with this error:\n"
     "{error}\n"
