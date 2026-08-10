@@ -1,7 +1,7 @@
 # issue-26: load_module의 `_counter` 가 실패 시에도 advance되는 동작 docstring 명시 (good-to-fix)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-4 완료 후
@@ -27,5 +27,13 @@ issue-4 완료 후
   advance됩니다 (호출자가 새 모듈 이름을 추적할 때 유의)."
 
 ## 완료 조건(승격 후)
-- [ ] `load_module` docstring에 카운터 advance 동작 명시
-- [ ] 기존 5개 load_module 테스트 회귀 없음
+- [x] `load_module` docstring에 카운터 advance 동작 명시
+- [x] 기존 5개 load_module 테스트 회귀 없음
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T00:54:25-04:00
+- **변경 파일**:
+  - `engine/aimd/validators.py`
+  - `regression-tests/verify-issue-26.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-26.sh` 통과 (5 passed)

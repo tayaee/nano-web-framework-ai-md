@@ -113,7 +113,7 @@ def load_module(path: Path) -> ModuleType:
     module object every time.
 
     - The module name is made unique as f"aimd_dyn_{next(_counter)}" (guarantees a
-      fresh object on reload)
+      fresh object on reload). 참고: 모듈 로드 실패 시에도 카운터는 advance됩니다 (호출자가 새 모듈 이름을 추적할 때 유의).
     - importlib.util.spec_from_file_location + module_from_spec + exec_module
     - Exceptions during import are propagated as-is (the caller catches them)
     - After success, if hasattr(module, "app") is False, raises
