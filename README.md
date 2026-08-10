@@ -50,7 +50,3 @@ Just drop a new file with the extension `.ai.md` into `src/` and see your applic
 ## Security Notice
 * LLM-generated code is executed directly during validation (`_import_gate`/`load_module`) without sandboxing under host process privileges. Do not expose this service directly to untrusted public internet environments.
 
-## Development Guidelines
-* Issue completion timestamp (`구현 완료 일시`) must be measured directly via `date +%Y-%m-%dT%H:%M:%S%:z` or `git log -1 --format=%cI` rather than manually estimated.
-
-
