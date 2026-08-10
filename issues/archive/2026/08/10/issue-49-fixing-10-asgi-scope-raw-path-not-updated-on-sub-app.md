@@ -41,6 +41,15 @@ if "raw_path" in sub_scope:
 또는 spec이 정의하는 URL 계약이 subpath-only path를 보장하므로 path의 bytes 인코딩(latin-1 / UTF-8 percent-encoding)을 그대로 쓰면 된다. **test_main.py의 `test_py_subapp_receives_correct_scope`에 `raw_path` 어설션을 추가**해 회귀를 잠근다.
 
 ## 완료 조건
-- [ ] `engine/aimd/main.py`의 서브앱 위임에서 `raw_path` 갱신
-- [ ] `test_py_subapp_receives_correct_scope`가 `raw_path`도 검증
-- [ ] `cd engine && uv run pytest tests/test_main.py -q` 통과
+- [x] `engine/aimd/main.py`의 서브앱 위임에서 `raw_path` 갱신
+- [x] `test_py_subapp_receives_correct_scope`가 `raw_path`도 검증
+- [x] `cd engine && uv run pytest tests/test_main.py -q` 통과
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T00:59:47-04:00
+- **변경 파일**:
+  - `engine/aimd/main.py`
+  - `engine/tests/test_main.py`
+  - `regression-tests/verify-issue-49.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-49.sh` 통과
