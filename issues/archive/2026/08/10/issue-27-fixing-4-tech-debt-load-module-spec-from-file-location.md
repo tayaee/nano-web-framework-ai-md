@@ -1,7 +1,7 @@
 # issue-27: load_module의 `spec_from_file_location` None 가드 메시지 의미 분리 (good-to-fix)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-4 완료 후
@@ -38,5 +38,13 @@ if spec is None or spec.loader is None:
 - 옵션 2 선택 시: 현재 동작 유지 + docstring에 분기 설명 추가
 
 ## 완료 조건(승격 후)
-- [ ] spec/loader None 가드가 의도한 메시지로 던져짐
-- [ ] 기존 5개 load_module 테스트 회귀 없음
+- [x] spec/loader None 가드가 의도한 메시지로 던져짐
+- [x] 기존 5개 load_module 테스트 회귀 없음
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T00:54:40-04:00
+- **변경 파일**:
+  - `engine/aimd/validators.py`
+  - `regression-tests/verify-issue-27.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-27.sh` 통과 (5 passed)

@@ -135,9 +135,7 @@ def load_module(path: Path) -> ModuleType:
     module_name = f"aimd_dyn_{next(_counter)}"
     spec = importlib.util.spec_from_file_location(module_name, str(path))
     if spec is None or spec.loader is None:
-        # spec_from_file_location almost never returns None, but handle it
-        # defensively as a consistent AttributeError.
-        raise AttributeError("module has no 'app' object")
+        raise ImportError(f"cannot load spec from {path}")
     module = importlib.util.module_from_spec(spec)
     # Bypass the pyc timestamp cache: read the source directly and compile + exec
     # (avoiding the loader path). The source must be exposed identically in both
