@@ -41,8 +41,12 @@ def _import_gate(code: str) -> str | None:
     old_dont_write_bytecode = sys.dont_write_bytecode
     sys.dont_write_bytecode = True
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            f.write(code)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(code)
+        except BaseException:
+            os.close(fd)
+            raise
         validators.load_module(tmp_path)
     except (Exception, SystemExit) as e:
         # issue-44: if the LLM-generated code calls sys.exit(...) at the top

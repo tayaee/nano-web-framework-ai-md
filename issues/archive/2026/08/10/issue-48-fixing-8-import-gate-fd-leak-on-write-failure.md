@@ -1,7 +1,7 @@
 # issue-48: compiler._import_gate — os.fdopen/write 실패 시 fd가 close되지 않을 가능성 (good-to-fix)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-8 완료 후
@@ -32,7 +32,13 @@ minimax의 issue-8 리뷰 Finding 2(good-to-fix): `tempfile.mkstemp`로 얻은 f
 대체해 컨텍스트 매니저가 자체적으로 안전하게 닫도록 리팩터링한다.
 
 ## 완료 조건(승격 후)
-- [ ] fd 누수 시나리오를 재현하는 테스트(또는 코드 리뷰로 대체) 후 수정 확인
+- [x] os.fdopen 호출 에러 가드 os.close(fd) 추가 및 회귀 테스트 통과
 
 ## 구현 결과
-(구현 후 기록)
+- **구현 완료 일시**: 2026-08-10T00:59:20-04:00
+- **변경 파일**:
+  - `engine/aimd/compiler.py`
+  - `regression-tests/verify-issue-48.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-48.sh` 통과
+
