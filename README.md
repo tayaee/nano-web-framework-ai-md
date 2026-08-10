@@ -46,3 +46,7 @@ Just drop a new file with the extension `.ai.md` into `src/` and see your applic
     ```
 ## Verified Configuration
 * WSL2 + Docker Desktop + Minimax/OpenAI
+
+## Development Guidelines
+* Issue completion timestamp (`구현 완료 일시`) must be measured directly via `date +%Y-%m-%dT%H:%M:%S%:z` or `git log -1 --format=%cI` rather than manually estimated.
+
