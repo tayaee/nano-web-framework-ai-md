@@ -20,7 +20,7 @@ if ! grep -q "^API_SYSTEM" "engine/aimd/prompts.py"; then echo "API_SYSTEM const
 if ! grep -q "^FIX_TEMPLATE" "engine/aimd/prompts.py"; then echo "FIX_TEMPLATE constant missing"; exit 1; fi
 
 # 3. Verify no functions/classes are included (file must contain only the 4 constants)
-if grep -qE "^(def |class )" "engine/aimd/prompts.py"; then
+if grep -qE "^[[:space:]]*(def |async def |class )" "engine/aimd/prompts.py"; then
     echo "prompts.py must contain constants only, no functions/classes"
     exit 1
 fi

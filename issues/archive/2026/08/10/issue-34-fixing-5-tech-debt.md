@@ -1,7 +1,7 @@
 # issue-34: verify-issue-5.sh의 "no functions/classes" grep이 async def/들여쓴 정의를 누락 (good-to-fix)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-5 완료 후
@@ -28,5 +28,14 @@ fi
 ```
 
 ## 완료 조건(승격 후)
-- [ ] `async def`/`class` 추가 시 회귀 스크립트가 실패로 감지
-- [ ] `bash regression-tests/verify-issue-5.sh` 정상 케이스 회귀 없음
+- [x] `async def`/`class` 추가 시 회귀 스크립트가 실패로 감지
+- [x] `bash regression-tests/verify-issue-5.sh` 정상 케이스 회귀 없음
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T00:56:14-04:00
+- **변경 파일**:
+  - `regression-tests/verify-issue-5.sh`
+  - `regression-tests/verify-issue-34.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-34.sh` 통과
+
