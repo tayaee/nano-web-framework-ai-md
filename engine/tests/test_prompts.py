@@ -23,3 +23,10 @@ def test_spa_system_mentions_html():
 
 def test_api_system_mentions_fastapi():
     assert "FastAPI" in API_SYSTEM
+
+
+def test_hard_constraints_in_prompts():
+    assert "No external libraries" in SPA_SYSTEM
+    assert "Do NOT call uvicorn.run()" in API_SYSTEM
+    assert "No other words" in CLASSIFY_SYSTEM
+

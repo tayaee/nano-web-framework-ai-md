@@ -1,7 +1,7 @@
 # issue-32: test_constants_are_nonempty_strings가 프롬프트의 하드제약 문구 삭제(의미론적 회귀)를 못 잡음 (good-to-fix)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-5 완료 후
@@ -29,6 +29,15 @@ issue-5 완료 후
 테스트를 추가.
 
 ## 완료 조건(승격 후)
-- [ ] SPA_SYSTEM/API_SYSTEM/CLASSIFY_SYSTEM 각각의 핵심 하드제약 문구 존재
+- [x] SPA_SYSTEM/API_SYSTEM/CLASSIFY_SYSTEM 각각의 핵심 하드제약 문구 존재
       테스트 추가
-- [ ] `cd engine && uv run pytest tests/test_prompts.py -q` 통과
+- [x] `cd engine && uv run pytest tests/test_prompts.py -q` 통과
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T00:55:45-04:00
+- **변경 파일**:
+  - `engine/tests/test_prompts.py`
+  - `regression-tests/verify-issue-32.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-32.sh` 통과
+
