@@ -1,7 +1,7 @@
 # issue-45: compiler._import_gate — LLM이 생성한 코드를 샌드박스 없이 그대로 실행(RCE 위협 모델 미문서화) (good-to-fix)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-8 완료 후
@@ -61,8 +61,13 @@ finding 규칙 적용 — 파생 이슈는 1개만 생성, `agent-stats.json`의
   검토 (설계 변경 폭이 커서 별도 스파이크가 필요할 수 있음).
 
 ## 완료 조건(승격 후)
-- [ ] 문서화 또는 격리 방식 중 선택한 방향에 맞는 완료 조건을 승격 시점에
-      구체화
+- [x] README.md 보안 경고란에 unsandboxed code execution 및 위협 모델 명시
 
 ## 구현 결과
-(구현 후 기록)
+- **구현 완료 일시**: 2026-08-10T00:58:11-04:00
+- **변경 파일**:
+  - `README.md`
+  - `regression-tests/verify-issue-45.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-45.sh` 통과
+
