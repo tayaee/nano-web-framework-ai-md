@@ -1,7 +1,7 @@
 # issue-35: verify-issue-5.sh의 상수명 grep이 주석·접두어까지 과매칭 (good-to-fix)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-5 완료 후
@@ -24,5 +24,14 @@ grep -q "^CLASSIFY_SYSTEM = " "engine/aimd/prompts.py" || (echo "CLASSIFY_SYSTEM
 ```
 
 ## 완료 조건(승격 후)
-- [ ] grep이 실제 할당 행만 매칭하고 주석은 매칭하지 않음을 확인
-- [ ] `bash regression-tests/verify-issue-5.sh` 정상 케이스 회귀 없음
+- [x] grep이 실제 할당 행만 매칭하고 주석은 매칭하지 않음을 확인
+- [x] `bash regression-tests/verify-issue-5.sh` 정상 케이스 회귀 없음
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T00:56:27-04:00
+- **변경 파일**:
+  - `regression-tests/verify-issue-5.sh`
+  - `regression-tests/verify-issue-35.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-35.sh` 통과
+
