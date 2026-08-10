@@ -1,7 +1,7 @@
 # issue-33: test_fix_template_formats_with_error가 FIX_TEMPLATE 본문 문구 회귀를 못 잡음 (good-to-fix)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-5 완료 후
@@ -28,5 +28,14 @@ def test_fix_template_formats_with_error():
 ```
 
 ## 완료 조건(승격 후)
-- [ ] FIX_TEMPLATE 본문 핵심 문장 포함 여부 assert 추가
-- [ ] `cd engine && uv run pytest tests/test_prompts.py -q` 통과
+- [x] FIX_TEMPLATE 본문 핵심 문장 포함 여부 assert 추가
+- [x] `cd engine && uv run pytest tests/test_prompts.py -q` 통과
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T00:55:59-04:00
+- **변경 파일**:
+  - `engine/tests/test_prompts.py`
+  - `regression-tests/verify-issue-33.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-33.sh` 통과
+

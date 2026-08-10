@@ -15,6 +15,7 @@ def test_constants_are_nonempty_strings():
 def test_fix_template_formats_with_error():
     result = FIX_TEMPLATE.format(error="x")
     assert "x" in result
+    assert "Same hard constraints as before" in result
 
 
 def test_spa_system_mentions_html():
