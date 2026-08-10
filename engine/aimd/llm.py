@@ -127,22 +127,23 @@ def _chat_openai_compatible(system: str, user: str, settings: Settings) -> str:
             response = client.chat.completions.create(**params)
         except openai.BadRequestError as e:
             message = str(e)
+            message_lower = message.lower()
             log.debug("llm error response provider=openai body=%s", getattr(e, "body", None))
-            if "max_completion_tokens" in message and token_param != "max_completion_tokens":
+            if "max_completion_tokens" in message_lower and token_param != "max_completion_tokens":
                 # Some newer models (e.g. gpt-5.x) reject max_tokens outright and
                 # require max_completion_tokens instead -- switch the param name,
                 # not the token value, and retry without consuming the clamp budget.
                 token_param = "max_completion_tokens"
                 log.warning("max_tokens unsupported, switching to max_completion_tokens")
                 continue
-            if "temperature" in message and not omit_temperature:
+            if "temperature" in message_lower and not omit_temperature:
                 # Defense in depth for reasoning models not yet covered by
                 # llm_params.json or the prefix heuristic: they reject
                 # temperature=0.0 and only accept the default (1).
                 omit_temperature = True
                 log.warning("temperature unsupported, omitting it and retrying")
                 continue
-            if "max_tokens" not in message and "token" not in message:
+            if "max_tokens" not in message_lower and "token" not in message_lower:
                 raise
             if tokens <= _MIN_TOKENS or halving_attempts >= _MAX_CLAMP_RETRIES:
                 raise
@@ -197,9 +198,10 @@ def _chat_anthropic(system: str, user: str, settings: Settings) -> str:
             response.raise_for_status()
         except httpx.HTTPStatusError as e:
             error_body = response.text
+            error_body_lower = error_body.lower()
             log.debug("llm error response provider=claude body=%s", error_body)
             if response.status_code != 400 or (
-                "max_tokens" not in error_body and "token" not in error_body
+                "max_tokens" not in error_body_lower and "token" not in error_body_lower
             ):
                 raise
             last_error = e

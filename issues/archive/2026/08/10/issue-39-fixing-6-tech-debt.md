@@ -1,7 +1,7 @@
 # issue-39: llm.chat — 토큰 한도 에러 문자열 대소문자 미구분 매칭 (good-to-fix)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-6 완료 후
@@ -33,5 +33,14 @@ if "max_tokens" not in lowered and "token" not in lowered:
 ```
 
 ## 완료 조건(승격 후)
-- [ ] 대소문자 혼용 토큰 에러 메시지에서도 재시도 발생 확인
-- [ ] `cd engine && uv run pytest tests/test_llm.py -q` 통과
+- [x] 대소문자 혼용 토큰 에러 메시지에서도 재시도 발생 확인
+- [x] `cd engine && uv run pytest tests/test_llm.py -q` 통과
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T00:57:17-04:00
+- **변경 파일**:
+  - `engine/aimd/llm.py`
+  - `regression-tests/verify-issue-39.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-39.sh` 통과
+
