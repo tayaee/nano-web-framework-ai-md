@@ -14,10 +14,10 @@ if [ ! -f "engine/tests/test_prompts.py" ]; then
 fi
 
 # 2. Check required constant definitions
-grep -q "^CLASSIFY_SYSTEM" "engine/aimd/prompts.py" || (echo "CLASSIFY_SYSTEM constant missing"; exit 1)
-grep -q "^SPA_SYSTEM" "engine/aimd/prompts.py" || (echo "SPA_SYSTEM constant missing"; exit 1)
-grep -q "^API_SYSTEM" "engine/aimd/prompts.py" || (echo "API_SYSTEM constant missing"; exit 1)
-grep -q "^FIX_TEMPLATE" "engine/aimd/prompts.py" || (echo "FIX_TEMPLATE constant missing"; exit 1)
+if ! grep -q "^CLASSIFY_SYSTEM" "engine/aimd/prompts.py"; then echo "CLASSIFY_SYSTEM constant missing"; exit 1; fi
+if ! grep -q "^SPA_SYSTEM" "engine/aimd/prompts.py"; then echo "SPA_SYSTEM constant missing"; exit 1; fi
+if ! grep -q "^API_SYSTEM" "engine/aimd/prompts.py"; then echo "API_SYSTEM constant missing"; exit 1; fi
+if ! grep -q "^FIX_TEMPLATE" "engine/aimd/prompts.py"; then echo "FIX_TEMPLATE constant missing"; exit 1; fi
 
 # 3. Verify no functions/classes are included (file must contain only the 4 constants)
 if grep -qE "^(def |class )" "engine/aimd/prompts.py"; then

@@ -1,7 +1,7 @@
 # issue-29: verify-issue-5.sh의 subshell `(exit 1)`이 `set -e` 무력화 시 상위 셸을 중단시키지 못함 (good-to-fix)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-5 완료 후
@@ -26,5 +26,14 @@ subshell 대신 `if ! grep -q ...; then echo ...; exit 1; fi` 형태로 변경�
 subshell 종속성을 제거.
 
 ## 완료 조건(승격 후)
-- [ ] `set +e` 상태에서도 필수 상수 누락 시 스크립트가 실패로 종료됨을 확인
-- [ ] `bash regression-tests/verify-issue-5.sh` 정상 케이스 회귀 없음
+- [x] `set +e` 상태에서도 필수 상수 누락 시 스크립트가 실패로 종료됨을 확인
+- [x] `bash regression-tests/verify-issue-5.sh` 정상 케이스 회귀 없음
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T00:55:06-04:00
+- **변경 파일**:
+  - `regression-tests/verify-issue-5.sh`
+  - `regression-tests/verify-issue-29.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-29.sh` 통과
+
