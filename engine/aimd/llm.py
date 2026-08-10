@@ -71,9 +71,15 @@ def _resolve_call_params(model: str, requested_tokens: int) -> tuple[str, int, b
     return "max_tokens", requested_tokens, False, "default"
 
 
+_client_cache: dict[tuple[str, str], openai.OpenAI] = {}
+
+
 def _make_client(settings: Settings) -> openai.OpenAI:
     """Kept separate so it can be monkeypatched in tests."""
-    return openai.OpenAI(api_key=settings.api_key, base_url=settings.base_url)
+    key = (settings.api_key, settings.base_url)
+    if key not in _client_cache:
+        _client_cache[key] = openai.OpenAI(api_key=settings.api_key, base_url=settings.base_url)
+    return _client_cache[key]
 
 
 def chat(system: str, user: str, settings: Settings) -> str:

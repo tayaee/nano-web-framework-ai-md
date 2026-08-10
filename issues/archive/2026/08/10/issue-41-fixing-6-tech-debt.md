@@ -1,7 +1,7 @@
 # issue-41: llm.chat — 매 호출마다 OpenAI 클라이언트를 재생성해 커넥션 풀링을 활용하지 못함 (good-to-fix)
 
 ## 상태
-
+완료
 
 ## 의존성
 issue-6 완료 후
@@ -44,5 +44,14 @@ def _make_client(settings: Settings) -> openai.OpenAI:
 ```
 
 ## 완료 조건(승격 후)
-- [ ] 캐싱 방식 채택 시 기존 5개 테스트(monkeypatch 기반) 회귀 없음
-- [ ] `cd engine && uv run pytest tests/test_llm.py -q` 통과
+- [x] 캐싱 방식 채택 시 기존 5개 테스트(monkeypatch 기반) 회귀 없음
+- [x] `cd engine && uv run pytest tests/test_llm.py -q` 통과
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T00:57:53-04:00
+- **변경 파일**:
+  - `engine/aimd/llm.py`
+  - `regression-tests/verify-issue-41.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-41.sh` 통과
+
