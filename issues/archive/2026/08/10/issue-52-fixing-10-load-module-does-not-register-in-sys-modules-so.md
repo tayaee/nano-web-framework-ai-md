@@ -1,7 +1,7 @@
 # issue-52: fixing-10 — load_module이 sys.modules에 미등록되어 pickle 실패 (good-to-fix / later)
 
 ## 상태
-
+완료
 
 ## 부모
 issue-10 (ASGI 디스패처)
@@ -36,6 +36,15 @@ AttributeError: Can't pickle local object 'C'
 load_module이 성공적으로 만든 모듈을 `sys.modules[module_name] = module`로 등록. 충돌 방지를 위해 `_counter`가 unique한 이름을 보장하므로 키 충돌은 없다. registry의 hot-swap 시 동일 모듈의 새 인스턴스를 만들면 sys.modules의 dict도 새 객체로 덮어쓰여야 한다.
 
 ## 완료 조건 (승격 후)
-- [ ] `sys.modules[module_name] = module` 추가
-- [ ] `test_load_module_registers_in_sys_modules` 신규 테스트
-- [ ] 기존 `tests/test_validators.py` / `test_compiler.py` 회귀 없음
+- [x] `sys.modules[module_name] = module` 추가
+- [x] `test_load_module_registers_in_sys_modules` 신규 테스트
+- [x] 기존 `tests/test_validators.py` / `test_compiler.py` 회귀 없음
+
+## 구현 결과
+- **구현 완료 일시**: 2026-08-10T01:00:46-04:00
+- **변경 파일**:
+  - `engine/aimd/validators.py`
+  - `engine/tests/test_validators.py`
+  - `regression-tests/verify-issue-52.sh`
+- **계획과의 차이**: 없음
+- **검증 결과**: `./regression-tests/verify-issue-52.sh` 통과 (26 passed)

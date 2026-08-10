@@ -148,4 +148,6 @@ def load_module(path: Path) -> ModuleType:
 
     if not hasattr(module, "app"):
         raise AttributeError("module has no 'app' object")
+    import sys
+    sys.modules[module_name] = module
     return module

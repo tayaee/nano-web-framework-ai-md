@@ -226,15 +226,13 @@ def test_load_module_returns_distinct_objects_each_call(tmp_path: Path):
     assert m2.app == "dummy"
 
 
-def test_load_module_does_not_register_in_sys_modules(tmp_path: Path):
+def test_load_module_registers_in_sys_modules(tmp_path: Path):
     import sys
 
     mod_path = tmp_path / "m.py"
     write_module(mod_path, 'app = "x"\n')
-    before = set(sys.modules)
 
-    load_module(mod_path)
+    module = load_module(mod_path)
 
-    after = set(sys.modules)
-    # No new module should have been added
-    assert after == before
+    assert module.__name__ in sys.modules
+    assert sys.modules[module.__name__] is module
