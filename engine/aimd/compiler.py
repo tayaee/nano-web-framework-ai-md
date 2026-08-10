@@ -10,9 +10,11 @@ from .classifier import Target
 from .config import Settings
 from .prompts import API_SYSTEM, FIX_TEMPLATE, SPA_SYSTEM
 
+import weakref
+
 log = logging.getLogger("aimd.compiler")
 
-_locks: dict[str, threading.Lock] = defaultdict(threading.Lock)
+_locks: weakref.WeakValueDictionary[str, threading.Lock] = weakref.WeakValueDictionary()
 _locks_guard = threading.Lock()
 
 
@@ -22,7 +24,11 @@ class CompileError(Exception):
 
 def _get_lock(name: str) -> threading.Lock:
     with _locks_guard:
-        return _locks[name]
+        lock = _locks.get(name)
+        if lock is None:
+            lock = threading.Lock()
+            _locks[name] = lock
+        return lock
 
 
 def _import_gate(code: str) -> str | None:
