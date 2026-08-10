@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import tempfile
 import threading
 from collections import defaultdict
@@ -37,6 +38,8 @@ def _import_gate(code: str) -> str | None:
     else an English error message."""
     fd, tmp_name = tempfile.mkstemp(suffix=".py")
     tmp_path = Path(tmp_name)
+    old_dont_write_bytecode = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             f.write(code)
@@ -48,6 +51,7 @@ def _import_gate(code: str) -> str | None:
         # outright with no retry.
         return f"{type(e).__name__}: {e}"
     finally:
+        sys.dont_write_bytecode = old_dont_write_bytecode
         tmp_path.unlink(missing_ok=True)
     return None
 
